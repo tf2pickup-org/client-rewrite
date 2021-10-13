@@ -3,6 +3,8 @@ import { socket } from '../socket';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import type { QueueSlot } from './models/queue-slot';
+import { WebsocketEvent } from '../websocket-event';
+import type { QueueState } from './models/queue-state';
 
 export const queue = new Observable<Queue>(subscriber => {
   let value: Queue = null;
@@ -24,10 +26,16 @@ export const queue = new Observable<Queue>(subscriber => {
     });
     update({ ...value, slots });
   };
-  socket.on('queue slots update', updateQueueSlots);
+  socket.on(WebsocketEvent.queueSlotsUpdate, updateQueueSlots);
+
+  const updateQueueState = (state: QueueState) => {
+    update({ ...value, state });
+  };
+  socket.on(WebsocketEvent.queueStateUpdate, updateQueueState);
 
   return () => {
-    socket.off('queue slots update', updateQueueSlots);
+    socket.off(WebsocketEvent.queueSlotsUpdate, updateQueueSlots);
+    socket.off(WebsocketEvent.queueStateUpdate, updateQueueState);
   };
 });
 
