@@ -16,7 +16,8 @@ export const queue = new Observable<Queue>(subscriber => {
 
   fetch('http://localhost:3000/queue')
     .then(response => response.json())
-    .then(update);
+    .then(update)
+    .catch(error => subscriber.error(error));
 
   const updateQueueSlots = (slotsToUpdate: QueueSlot[]) => {
     const slots = [...value.slots];
