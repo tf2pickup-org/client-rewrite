@@ -9,3 +9,9 @@ export let queueSlot: QueueSlot;
     {queueSlot.player.name}
   {/if}
 </div>
+
+<style lang="scss">
+  .queue-slot {
+    width: 290px;
+  }
+</style>
