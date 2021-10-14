@@ -5,6 +5,7 @@ import { filter, map } from 'rxjs/operators';
 import type { QueueSlot } from './models/queue-slot';
 import { WebsocketEvent } from '../websocket-event';
 import type { QueueState } from './models/queue-state';
+import { httpClient } from '../http-client';
 
 export const queue = new Observable<Queue>(subscriber => {
   let value: Queue = null;
@@ -14,9 +15,8 @@ export const queue = new Observable<Queue>(subscriber => {
     subscriber.next(value);
   };
 
-  fetch('http://localhost:3000/queue')
-    .then(response => response.json())
-    .then(update)
+  httpClient.get<Queue>('/queue')
+    .then(response => update(response.data))
     .catch(error => subscriber.error(error));
 
   const updateQueueSlots = (slotsToUpdate: QueueSlot[]) => {
